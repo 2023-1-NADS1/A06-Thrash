@@ -9,7 +9,7 @@ Existem algumas diferenças importantes entre a execução do código em uma sim
 
 1. **Simulação de Hardware**: No ambiente de simulação, o hardware é representado virtualmente. Isso significa que alguns aspectos do hardware, como ruído elétrico ou características físicas dos componentes, não são representados. No ambiente real, esses fatores podem ter um impacto e precisam ser considerados.
 
-2. **Resistores**: Na simulação do Wokwi, os resistores são ignorados na simulação de circuitos analógicos. No ambiente real, os resistores são componentes críticos que são usados para, por exemplo, reduzir a tensão no pino ECHO do sensor ultrassônico HC-SR04 de 5V para 3,3V para evitar danificar o microcontrolador ESP32【34†source】.
+2. **Resistores**: Na simulação do Wokwi, os resistores são ignorados na simulação de circuitos analógicos. No ambiente real, os resistores são componentes críticos que são usados para, por exemplo, reduzir a tensão no pino ECHO do sensor ultrassônico HC-SR04 de 5V para 3,3V para evitar danificar o microcontrolador ESP32.
 
 3. **Funcionalidade pulseIn()**: Na simulação do Wokwi, a função pulseIn() não funciona exatamente como na realidade porque o ambiente de simulação não consegue reproduzir a emissão e o retorno do pulso ultrassônico. Na realidade, a função pulseIn() mede o tempo que leva para o sinal ultrassônico emitido pelo sensor retornar, permitindo assim calcular a distância até o objeto detectado.
 
