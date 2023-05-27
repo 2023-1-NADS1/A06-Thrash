@@ -76,9 +76,9 @@ O projeto ainda está em desenvolvimento, por isso ainda não tem uma licença a
 
 ## 🎓 Referências
 
-- [Documentação oficial do ESP32](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/)
-- [Biblioteca WiFi para ESP32](https://www.arduino.cc/en/Reference/WiFi)
-- [Biblioteca HTTPClient para ESP32](https://www.arduino.cc/en/Tutorial/LibraryExamples/HttpClient)
+- [Documentação oficial do ESP32]
+- [Biblioteca WiFi para ESP32]
+- [Biblioteca HTTPClient para ESP32]
 
 
 
