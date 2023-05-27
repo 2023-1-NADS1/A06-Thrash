@@ -1,76 +1,74 @@
-#include <WiFi.h> // As bibliotecas não estão inclusas nesse commit, se precisar, pode baixá-las para teste de funcionamento
-#include <HTTPClient.h>  // As bibliotecas não estão inclusas nesse commit, se precisar, pode baixá-las para teste de funcionamento
+#include <WiFi.h>  
+#include <HTTPClient.h>  
 
-// As bibliotecas não estão inclusas nesse commit, se precisar, pode baixá-las para teste de funcionamento
-// As bibliotecas não estão inclusas nesse commit, se precisar, pode baixá-las para teste de funcionamento
-// As bibliotecas não estão inclusas nesse commit, se precisar, pode baixá-las para teste de funcionamento
-// As bibliotecas não estão inclusas nesse commit, se precisar, pode baixá-las para teste de funcionamento
+const char* ssid = "vamos inserir o wifi";  
+const char* senha = "vamos inserir a senha do wifi";  
 
-// Defina as credenciais da sua rede WiFi
-const char* ssid = "vamos inserir o wifi";
-const char* senha = "vamos inserir a senha do wifi";
+const char* servidor_http = "servidor";  
+const int porta_http = 80;  
+const char* rota_http = "/enviar-dados";  
 
-// Defina o endereço do servidor HTTP
-const char* servidor_http = "servidor";
-const int porta_http = 80;
-const char* rota_http = "/enviar-dados";
+const int pinoDisparo = 14;  
+const int pinoEco = 12;  
 
-// Definindo as portas do ESP32 que serão usadas para o pino de disparo e o pino de eco do sensor ultrassônico
-const int pinoDisparo = 14;
-const int pinoEco = 12;
+#define VELOCIDADE_SOM 0.034  
+#define ALTURA_LIXEIRA 50  
 
-// Definindo a velocidade do som em cm/us como uma constante. Isso é usado para calcular a distância.
-#define VELOCIDADE_SOM 0.034
+long duracao;  
+int distanciaCm;  
+int nivelLixo;  
+int percentualNivelLixo;  
 
-// Altura total da lixeira em cm.
-#define ALTURA_LIXEIRA 50
+void configurar_wifi() {  
+  delay(10);  
+  WiFi.begin(ssid, senha);  
 
-// Variáveis ​​para armazenar a duração do sinal de eco, a distância calculada e o nível do lixo
-long duracao;
-int distanciaCm;
-int nivelLixo;
-int percentualNivelLixo;
+  while (WiFi.status() != WL_CONNECTED) {  
+    delay(500);  
+    Serial.println("Conectando ao WiFi..");  
+  }  
 
-void configurar_wifi() {
-  delay(10);
-  WiFi.begin(ssid, senha);
+  Serial.println("WiFi conectado");  
+  Serial.println("Endereço IP: ");  
+  Serial.println(WiFi.localIP());  
+}  
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.println("Conectando ao WiFi..");
-  }
+void setup() {  
+  Serial.begin(115200);  
+  configurar_wifi();  
+  pinMode(pinoDisparo, OUTPUT);   
+  pinMode(pinoEco, INPUT);   
+}  
 
-  Serial.println("WiFi conectado");
-  Serial.println("Endereço IP: ");
-  Serial.println(WiFi.localIP());
-}
+void loop() {  
+  digitalWrite(pinoDisparo, LOW);
+  delayMicroseconds(2);
+  digitalWrite(pinoDisparo, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(pinoDisparo, LOW);
 
-void setup() {
-  Serial.begin(115200);
-  configurar_wifi();
-  pinMode(pinoDisparo, OUTPUT); 
-  pinMode(pinoEco, INPUT); 
-}
+  duracao = pulseIn(pinoEco, HIGH);
 
-void loop() {
-  // Restante do código para medir a distância e o nível de lixo
+  distanciaCm = duracao * 0.034 / 2;
 
-  // Depois de calcular a distância e o nível do lixo, envie os dados para o servidor HTTP
-  String url = String(servidor_http) + String(rota_http) + "?nivelLixo=" + String(nivelLixo) + "&percentualNivelLixo=" + String(percentualNivelLixo);
+  nivelLixo = ALTURA_LIXEIRA - distanciaCm;
+  percentualNivelLixo = (nivelLixo * 100) / ALTURA_LIXEIRA;
 
-  HTTPClient http;
-  http.begin(url);
+  String url = String(servidor_http) + String(rota_http) + "?nivelLixo=" + String(nivelLixo) + "&percentualNivelLixo=" + String(percentualNivelLixo);  
 
-  int httpResponseCode = http.GET();
+  HTTPClient http;  
+  http.begin(url);  
 
-  if (httpResponseCode == HTTP_CODE_OK) {
-    Serial.println("Dados enviados com sucesso para o servidor HTTP");
-  } else {
-    Serial.print("Falha ao enviar dados para o servidor HTTP. Código de resposta: ");
-    Serial.println(httpResponseCode);
-  }
+  int httpResponseCode = http.GET();  
 
-  http.end();
+  if (httpResponseCode == HTTP_CODE_OK) {  
+    Serial.println("Dados enviados com sucesso para o servidor HTTP");  
+  } else {  
+    Serial.print("Falha ao enviar dados para o servidor HTTP. Código de resposta: ");  
+    Serial.println(httpResponseCode);  
+  }  
 
-  delay(5000);  // Espere 5 segundos antes de enviar novamente
+  http.end();  
+
+  delay(5000); // Espere 5 segundos antes de enviar novamente
 }
